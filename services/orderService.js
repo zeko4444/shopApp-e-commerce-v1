@@ -1,6 +1,5 @@
-const dotenv = require("dotenv");
-dotenv.config({ path: "config.env" });
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
+
 const asyncHandler = require("express-async-handler");
 const factory = require("./handlerFactory");
 const ApiError = require("../utils/apiError");
