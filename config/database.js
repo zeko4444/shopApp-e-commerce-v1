@@ -2,16 +2,14 @@ const mongoose = require("mongoose");
 
 const database = () => {
   mongoose
-    .connect("mongodb://0.0.0.0:27017/udemy_ecommerce", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    .connect(process.env.DB_URI)
+    .then((conn) => {
+      console.log(`Database connected : ${conn.connection.host}`);
     })
-    .then(() => {
-      console.log("connected");
+    .catch((err) => {
+      console.log(`Database error : ${err.message}`);
+      process.exit(1);
     });
-  //   .catch((err)=>{
-  //  console.log(err)
-  //   })
 };
 
 module.exports = database;
