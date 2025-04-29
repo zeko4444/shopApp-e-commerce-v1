@@ -30,25 +30,26 @@ exports.paymentCallback = async (req, res) => {
     const { obj } = req.body;
 
     if (obj.success === true) {
-      // Payment succeeded, create order
-      const { amount_cents, customer, order } = obj;
+      const userId = req.query.userId;
+      const cartItems = JSON.parse(req.query.cartItems);
+      const shippingAddress = JSON.parse(req.query.shippingAddress);
 
       const newOrder = await Order.create({
-        user: req.query.userId, // you can send userId in the payment URL and catch it back here
-        cartItems: JSON.parse(req.query.cartItems), // same here
-        shippingAddress: JSON.parse(req.query.shippingAddress),
-        totalOrderPrice: amount_cents / 100,
+        user: userId,
+        cartItems,
+        shippingAddress,
+        totalOrderPrice: obj.amount_cents / 100,
         paymentMethodType: "card",
         isPaid: true,
         paidAt: Date.now(),
       });
 
-      console.log("Order created after payment!", newOrder);
+      console.log("✅ Order created after payment!", newOrder);
     }
 
     res.status(200).json({ message: "Callback received" });
   } catch (error) {
-    console.error("Callback Error:", error.response?.data || error.message);
+    console.error("❌ Callback Error:", error.message);
     res.status(500).json({ message: "Callback error", error: error.message });
   }
 };

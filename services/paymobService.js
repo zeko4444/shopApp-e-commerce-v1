@@ -56,7 +56,11 @@ async function generatePaymentURL(
     }
   );
 
-  const paymentURL = `https://accept.paymob.com/api/acceptance/iframes/${PAYMOB_IFRAME_ID}?payment_token=${paymentKeyData.token}`;
+  const encodedUserId = encodeURIComponent(user._id);
+  const encodedCartItems = encodeURIComponent(JSON.stringify(cartData));
+  const encodedShipping = encodeURIComponent(JSON.stringify(shippingAddress));
+
+  const paymentURL = `https://accept.paymob.com/api/acceptance/iframes/${PAYMOB_IFRAME_ID}?payment_token=${paymentKeyData.token}&userId=${encodedUserId}&cartItems=${encodedCartItems}&shippingAddress=${encodedShipping}`;
 
   return {
     paymentURL,
