@@ -24,7 +24,7 @@ async function generatePaymentURL(
     amount_cents: totalOrderPrice * 100,
     currency: "EGP",
     items: cartData.map((item) => ({
-      name: item.product.title,
+      name: item.title || item.product?.title || "Item",
       amount_cents: item.price * 100,
       quantity: item.quantity,
     })),
