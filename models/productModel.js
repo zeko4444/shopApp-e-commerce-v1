@@ -37,11 +37,16 @@ const productSchema = new mongoose.Schema(
       type: Number,
     },
     colors: [String],
-    imgCover: {
+    image: {
       type: String,
       required: true,
     },
-    imgs: [String],
+    imgs: [
+      {
+        url: String, // URL for the image or video
+        type: { type: String, enum: ["image", "video"], required: true }, // type for the media (image or video)
+      },
+    ],
     category: {
       type: mongoose.Schema.ObjectId,
       ref: "category",

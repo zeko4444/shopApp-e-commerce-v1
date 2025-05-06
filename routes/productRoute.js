@@ -15,6 +15,7 @@ const {
 } = require("../services/productService");
 const authService = require("../services/authService");
 const reviewRoute = require("./reviewRoute");
+const { uploadMedia } = require("../config/multer");
 
 const router = express.Router({ mergeParams: true });
 
@@ -29,6 +30,7 @@ router
   .post(
     authService.protect,
     authService.allowedTo("admin", "seller"),
+    uploadMedia,
     createProductValidator,
     createProduct
   );
@@ -38,6 +40,7 @@ router
   .put(
     authService.protect,
     authService.allowedTo("admin", "seller"),
+    uploadMedia,
     updateProductValidator,
     updateProduct
   )

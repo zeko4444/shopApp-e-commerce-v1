@@ -1,12 +1,22 @@
 const asyncHandler = require("express-async-handler");
 
 const User = require("../models/userModel");
+const productModel = require("../models/productModel");
+const ApiError = require("../utils/apiError");
 
 // @desc    Add product to wishlist
 // @route   POST /api/v1/wishlist
 // @access  Protected/User
 exports.addProductToWishlist = asyncHandler(async (req, res, next) => {
+  const product = await productModel.findById(req.body.productId);
+
+  if (!product)
+    return next(
+      new ApiError(`No product for this id ${req.body.productId}`, 404)
+    );
+
   // $addToSet => add productId to wishlist array if productId not exist
+
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -26,6 +36,13 @@ exports.addProductToWishlist = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/v1/wishlist/:productId
 // @access  Protected/User
 exports.removeProductFromWishlist = asyncHandler(async (req, res, next) => {
+  const product = await productModel.findById(req.params.productId);
+
+  if (!product)
+    return next(
+      new ApiError(`No product for this id ${req.params.productId}`, 404)
+    );
+
   // $pull => remove productId from wishlist array if productId exist
   const user = await User.findByIdAndUpdate(
     req.user._id,

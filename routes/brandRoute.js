@@ -14,6 +14,8 @@ const {
 } = require("../services/brandservice");
 
 const authService = require("../services/authService");
+const { uploadMedia } = require("../config/multer");
+
 const router = express.Router();
 
 router
@@ -22,6 +24,7 @@ router
   .post(
     authService.protect,
     authService.allowedTo("admin", "seller"),
+    uploadMedia,
     createBrandValidator,
     createBrand
   );
@@ -31,6 +34,7 @@ router
   .put(
     authService.protect,
     authService.allowedTo("admin", "seller"),
+    uploadMedia,
     updateBrandValidator,
     updateBrand
   )

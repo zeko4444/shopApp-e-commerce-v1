@@ -43,6 +43,12 @@ const userSchema = new mongoose.Schema(
         ref: "product",
       },
     ],
+    follow: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "brand",
+      },
+    ],
   },
   { timestamps: true }
 );

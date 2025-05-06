@@ -16,6 +16,7 @@ const {
   deleteSubCategoryValidator,
 } = require("../utils/validators/subCategoryValidator");
 const authService = require("../services/authService");
+const { uploadMedia } = require("../config/multer");
 
 //mergeParams: allows us to access parameters on other routers
 //ex: we need to access categoryId from category router
@@ -27,6 +28,7 @@ router
     authService.protect,
     authService.allowedTo("admin", "seller"),
     setCategoryIdToBody,
+    uploadMedia,
     createSubCategoryValidator,
     createSubCategory
   )
@@ -38,6 +40,7 @@ router
   .put(
     authService.protect,
     authService.allowedTo("admin", "seller"),
+    uploadMedia,
     updateSubCategoryValidator,
     updateSubCategory
   )
