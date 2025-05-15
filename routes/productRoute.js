@@ -12,6 +12,8 @@ const {
   updateProduct,
   deleteProduct,
   createFilterObj,
+  getRelatedProducts,
+  getOtherBrandsInCategory,
 } = require("../services/productService");
 const authService = require("../services/authService");
 const reviewRoute = require("./reviewRoute");
@@ -34,6 +36,10 @@ router
     createProductValidator,
     createProduct
   );
+
+router.get("/:id/related", getRelatedProducts);
+router.get("/:id/brands-in-category", getOtherBrandsInCategory);
+
 router
   .route("/:id")
   .get(getProductValidator, getProduct)

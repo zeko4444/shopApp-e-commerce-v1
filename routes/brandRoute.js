@@ -11,12 +11,17 @@ const {
   getBrands,
   updateBrand,
   deleteBrand,
+  getBrandsWithProducts,
 } = require("../services/brandservice");
+
+const productRoute = require("./productRoute");
 
 const authService = require("../services/authService");
 const { uploadMedia } = require("../config/multer");
 
 const router = express.Router();
+
+router.use("/:brandID/products", productRoute);
 
 router
   .route("/")
@@ -28,6 +33,9 @@ router
     createBrandValidator,
     createBrand
   );
+
+router.get("/brands-with-products", getBrandsWithProducts);
+
 router
   .route("/:id")
   .get(getBrandValidator, getBrand)

@@ -26,3 +26,29 @@ exports.updateBrand = factory.update(brandModel);
 // @access private
 
 exports.deleteBrand = factory.delete(brandModel);
+
+exports.getBrandsWithProducts = async (req, res) => {
+  try {
+    const brands = await brandModel.aggregate([
+      {
+        $lookup: {
+          from: "products", // name of the product collection in MongoDB (plural and lowercase)
+          localField: "_id",
+          foreignField: "brand",
+          as: "products",
+        },
+      },
+      {
+        $addFields: {
+          products: { $slice: ["$products", 6] }, // limit to 6 products per brand
+        },
+      },
+    ]);
+
+    res
+      .status(200)
+      .json({ status: "success", results: brands.length, data: brands });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+};

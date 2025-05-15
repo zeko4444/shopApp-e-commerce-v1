@@ -4,32 +4,79 @@ const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const sendEmail = require("../utils/sendEmail");
+const { sendEmail } = require("../utils/sendEmail");
 const createToken = require("../utils/createToken");
+const VerificationCode = require("../models/verificationCodeModel");
+
+// @desc  verificationCode
+// @route GET /api/v1/auth/request-verification
+// @access  puplic
+exports.verificationCode = asynchandler(async function (req, res, next) {
+  const { email } = req.body;
+
+  // Generate a random 6-digit code
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Set expiry time (e.g. 10 minutes)
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+  // Delete old code if exists
+  await VerificationCode.deleteMany({ email });
+
+  // Save to DB
+  await VerificationCode.create({ email, code, expiresAt });
+
+  // Send the code via email
+  await sendEmail(email, `Your verification code is: ${code}`);
+
+  res.status(200).json({ message: "Verification code sent" });
+});
 
 // @desc  signup
 // @route GET /api/v1/auth/signup
 //@access  puplic
 exports.signup = asynchandler(async function (req, res, next) {
-  //create user
+  const { name, email, password, role, code } = req.body;
+
+  // Check code in DB
+  const record = await VerificationCode.findOne({ email, code });
+
+  if (!record || record.expiresAt < Date.now()) {
+    return res.status(400).json({ message: "Invalid or expired code" });
+  }
+
+  // Optional: Check if user exists
+  const existingUser = await userModel.findOne({ email });
+  if (existingUser) {
+    return res.status(400).json({ message: "User already exists" });
+  }
+
   const user = await userModel.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    role: req.body.role,
+    name,
+    email,
+    password,
+    role,
   });
 
-  //generate token
+  // Generate token
   const token = createToken(user._id);
 
-  res.status(201).json({ data: user, token });
+  // Clean up code
+  await VerificationCode.deleteMany({ email });
+
+  res.status(201).json({ message: "User created", data: user, token });
 });
 
 exports.login = asynchandler(async function (req, res, next) {
   const user = await userModel.findOne({ email: req.body.email });
+
+  console.log(user);
+  console.log(!(await bcrypt.compare(req.body.password, user.password)));
+
   if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
     return next(new ApiError("Incorrect password or email", 401));
   }
+
   const token = createToken(user._id);
 
   res.status(200).json({ data: user, token });

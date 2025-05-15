@@ -18,7 +18,7 @@ const brandschema = new mongoose.Schema(
     brandImage: String,
     cover: {
       url: String, // URL for the cover image/video
-      type: { type: String, enum: ["image", "video"], required: true }, // type for cover (either 'image' or 'video')
+      type: { type: String, enum: ["image", "video"] }, // type for cover (either 'image' or 'video')
     },
   },
   { timestamps: true }

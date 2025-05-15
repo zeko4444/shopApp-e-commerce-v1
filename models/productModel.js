@@ -61,6 +61,7 @@ const productSchema = new mongoose.Schema(
     brand: {
       type: mongoose.Schema.ObjectId,
       ref: "brand",
+      required: true,
     },
     ratingAvg: {
       type: Number,
